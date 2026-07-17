@@ -46,7 +46,7 @@ node("general-pipeline") {
       }
 
       stage("Helm deploy") {
-        sh "helm upgrade ${helmName} --install --namespace default ./${pipelinePath}/helm --debug"
+        sh "helm upgrade ${helmName} --install --namespace default ./${pipelinePath}/helm -f ./${pipelinePath}/helm/${helmName}-values.yaml --debug"
       }
     } else {
       echo "Skip Helm deploy step."
