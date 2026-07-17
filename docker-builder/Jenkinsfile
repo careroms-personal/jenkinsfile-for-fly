@@ -1,11 +1,14 @@
 def buildStepSelected = BUILD_STEP_SELECT.toLowerCase().replace(" ", "")
 def gitRepo = ""
+def dockerRegistry = ""
 
 switch(SELECT_STUPID_PROJECT) {
   case "terminal-clock":
     gitRepo = "careroms-personal/stupid-cpp-terminal-clock.git"
+    dockerRegistry = "stupid-cpp-terminal-clock"
   case "sheep-counting":
     gitRepo = "careroms-personal/stupid-cpp-sheep-couting.git"
+    dockerRegistry = "stupid-cpp-sheep-counting"
   break
 }
 
@@ -20,7 +23,7 @@ node("image-builder") {
           /kaniko/executor \
             --context=git://github.com/${gitRepo}#refs/heads/main \
             --dockerfile=Dockerfile \
-            --destination=careromspersonal/stupid-cpp-terminal-clock:latest
+            --destination=careromspersonal/${dockerRegistry}:latest
         """
       } else {
         echo "Skip docker build step."
