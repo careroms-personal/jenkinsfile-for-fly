@@ -11,12 +11,12 @@ node("general-job") {
     }
 
     stage("Read yaml config") {
-      projectConfig = readYaml(file: "pipeline-config.yaml")
+      projectConfig = readYaml(file: "docker-builder/pipeline-config.yaml")
     }
 
     stage("Select config") {
       def selected = projectConfig.projectConfigs[SELECT_STUPID_PROJECT]
-      
+
       gitRepo = selected.gitRepo
       dockerRegistry = selected.dockerRegistry
       helmName = selected.helmName
