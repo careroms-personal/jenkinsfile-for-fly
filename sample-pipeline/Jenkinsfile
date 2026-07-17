@@ -3,15 +3,16 @@ def gitRepo = ""
 def dockerRegistry = ""
 def helmName = ""
 def projectConfig
+def pipelinePath = "sample-pipeline"
 
-node("general-job") {
+node("general-pipeline") {
   container("ubuntu") {
     stage("Checkout pipeline project") {
       checkout scm
     }
 
     stage("Read yaml config") {
-      projectConfig = readYaml(file: "docker-builder/pipeline-config.yaml")
+      projectConfig = readYaml(file: "${pipelinePath}/pipeline-config.yaml")
     }
 
     stage("Select config") {
@@ -22,9 +23,7 @@ node("general-job") {
       helmName = selected.helmName
     }
   }
-}
 
-node("image-builder") {
   container("kaniko"){
     stage("Build image") {
       if(buildStepSelected.contains("builddocker")) {
@@ -39,27 +38,15 @@ node("image-builder") {
       }
     }
   }
-}
 
-node("helm-deploy") {
   container("helm") {
     if(buildStepSelected.contains("helmdeploy")) {
-      stage("Checkout Project helm file") {
-        checkout(
-          scmGit(
-            branches: [[name: '*/main']], 
-            extensions: [
-              cloneOption(depth: 1, noTags: false, reference: '', shallow: true), 
-              sparseCheckout([[path: 'helm']])], 
-            userRemoteConfigs: [[url: "https://github.com/${gitRepo}"]]))
-      }
-
       stage("Check file") {
         sh "ls"
       }
 
       stage("Helm deploy") {
-        sh "helm upgrade ${helmName} --install --namespace default ./helm --debug"
+        sh "helm upgrade ${helmName} --install --namespace default ./${pipelinePath}/helm --debug"
       }
     } else {
       echo "Skip Helm deploy step."
