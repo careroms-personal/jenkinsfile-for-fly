@@ -1,15 +1,18 @@
 def buildStepSelected = BUILD_STEP_SELECT.toLowerCase().replace(" ", "")
 def gitRepo = ""
 def dockerRegistry = ""
+def helmName = ""
 
 switch(SELECT_STUPID_PROJECT) {
   case "terminal-clock":
     gitRepo = "careroms-personal/stupid-cpp-terminal-clock.git"
     dockerRegistry = "stupid-cpp-terminal-clock"
+    helmName = "sctc"
   break
   case "sheep-counting":
     gitRepo = "careroms-personal/stupid-cpp-sheep-couting.git"
     dockerRegistry = "stupid-cpp-sheep-counting"
+    helmName = "scsc"
   break
 }
 
@@ -51,7 +54,7 @@ node("helm-deploy") {
       }
 
       stage("Helm deploy") {
-        sh "helm upgrade sctc --install --namespace default ./helm --debug"
+        sh "helm upgrade ${helmName} --install --namespace default ./helm --debug"
       }
     } else {
       echo "Skip Helm deploy step."
