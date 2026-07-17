@@ -38,7 +38,7 @@ node("helm-deploy") {
       }
 
       stage("Helm deploy") {
-        sh "helm upgrade sctc --install --namespace default ./helm --debug --dry-run"
+        sh "helm upgrade sctc --install --namespace default ./helm --debug"
       }
     } else {
       echo "Skip Helm deploy step."
