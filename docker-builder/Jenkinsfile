@@ -4,7 +4,7 @@ def gitRepo = ""
 switch(SELECT_STUPID_PROJECT) {
   case "terminal-clock":
     gitRepo = "careroms-personal/stupid-cpp-terminal-clock.git"
-  case "sheep-counting"
+  case "sheep-counting":
     gitRepo = "careroms-personal/stupid-cpp-sheep-couting.git"
   break
 }
