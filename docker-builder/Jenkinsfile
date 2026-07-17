@@ -6,10 +6,32 @@ node("image-builder") {
         echo "$PODMAN_AUTH" > /kaniko/.docker/config.json
 
         /kaniko/executor \
-          --context=git://github.com/careroms-personal/stupid-cpp-hello-world.git#refs/heads/main \
+          --context=git://github.com/careroms-personal/stupid-cpp-terminal-clock.git#refs/heads/main \
           --dockerfile=Dockerfile \
-          --destination=careromspersonal/hell-world-cpp:latest
+          --destination=careromspersonal/stupid-cpp-terminal-clock:latest
       '''
+    }
+  }
+}
+
+node("helm-deploy") {
+  container("helm-deploy") {
+    stage("Checkout Project helm file") {
+      checkout(
+        scmGit(
+          branches: [[name: '*/main']], 
+          extensions: [
+            cloneOption(depth: 1, noTags: false, reference: '', shallow: true), 
+            sparseCheckout([[path: 'helm']])], 
+          userRemoteConfigs: [[url: 'https://github.com/careroms-personal/stupid-cpp-terminal-clock.git']]))
+    }
+
+    stage("Check file") {
+      sh "ls"
+    }
+
+    stage("Helm deploy") {
+      sh "helm upgrade sctc --install --namespace default ./ --debug --dry-run"
     }
   }
 }
