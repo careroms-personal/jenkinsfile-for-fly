@@ -7,20 +7,16 @@ def pipelinePath = "sample-pipeline"
 
 node("general-pipeline") {
   container("ubuntu") {
-    stage("Checkout pipeline project") {
-      checkout scm
-    }
-
-    stage("Read yaml config") {
-      projectConfig = readYaml(file: "${pipelinePath}/pipeline-config.yaml")
-    }
-
     stage("Select config") {
+      checkout scm
+      projectConfig = readYaml(file: "${pipelinePath}/pipeline-config.yaml")
       def selected = projectConfig.projectConfigs[SELECT_STUPID_PROJECT]
 
       gitRepo = selected.gitRepo
       dockerRegistry = selected.dockerRegistry
       helmName = selected.helmName
+
+      echo "Configure completed."
     }
   }
 
