@@ -15,7 +15,7 @@ node("image-builder") {
 }
 
 node("helm-deploy") {
-  container("helm-deploy") {
+  container("helm") {
     stage("Checkout Project helm file") {
       checkout(
         scmGit(
