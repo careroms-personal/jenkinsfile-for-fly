@@ -2,18 +2,26 @@ def buildStepSelected = BUILD_STEP_SELECT.toLowerCase().replace(" ", "")
 def gitRepo = ""
 def dockerRegistry = ""
 def helmName = ""
+def projectConfig
 
-switch(SELECT_STUPID_PROJECT) {
-  case "terminal-clock":
-    gitRepo = "careroms-personal/stupid-cpp-terminal-clock.git"
-    dockerRegistry = "stupid-cpp-terminal-clock"
-    helmName = "sctc"
-  break
-  case "sheep-counting":
-    gitRepo = "careroms-personal/stupid-cpp-sheep-couting.git"
-    dockerRegistry = "stupid-cpp-sheep-counting"
-    helmName = "scsc"
-  break
+node("general-job") {
+  container("ubuntu") {
+    stage("Checkout pipeline project") {
+      checkout scm
+    }
+
+    stage("Read yaml config") {
+      projectConfig = readYaml(file: "docker-builder/pipeline-config.yaml")
+    }
+
+    stage("Select config") {
+      def selected = projectConfig.projectConfigs[SELECT_STUPID_PROJECT]
+
+      gitRepo = selected.gitRepo
+      dockerRegistry = selected.dockerRegistry
+      helmName = selected.helmName
+    }
+  }
 }
 
 node("image-builder") {

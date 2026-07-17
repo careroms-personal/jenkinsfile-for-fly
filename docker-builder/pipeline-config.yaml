@@ -1,0 +1,10 @@
+projectConfigs:
+  terminal-clock:
+    gitRepo: "careroms-personal/stupid-cpp-terminal-clock.git"
+    dockerRegistry: "stupid-cpp-terminal-clock"
+    helmName: "sctc"
+
+  sheep-counting:
+    gitRepo: "careroms-personal/stupid-cpp-sheep-couting.git"
+    dockerRegistry: "stupid-cpp-sheep-counting"
+    helmName: "scsc"
