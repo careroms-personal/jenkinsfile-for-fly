@@ -1,18 +1,27 @@
 def buildStepSelected = BUILD_STEP_SELECT.toLowerCase().replace(" ", "")
+def gitRepo = ""
+
+switch(SELECT_STUPID_PROJECT) {
+  case "terminal-clock":
+    gitRepo = "careroms-personal/stupid-cpp-terminal-clock.git"
+  case "sheep-counting"
+    gitRepo = "careroms-personal/stupid-cpp-sheep-couting.git"
+  break
+}
 
 node("image-builder") {
   container("kaniko"){
     stage("Build image") {
       if(buildStepSelected.contains("builddocker")) {
-        sh '''
+        sh """
           mkdir -p /kaniko/.docker
           echo "$PODMAN_AUTH" > /kaniko/.docker/config.json
 
           /kaniko/executor \
-            --context=git://github.com/careroms-personal/stupid-cpp-terminal-clock.git#refs/heads/main \
+            --context=git://github.com/${gitRepo}#refs/heads/main \
             --dockerfile=Dockerfile \
             --destination=careromspersonal/stupid-cpp-terminal-clock:latest
-        '''
+        """
       } else {
         echo "Skip docker build step."
       }
@@ -30,7 +39,7 @@ node("helm-deploy") {
             extensions: [
               cloneOption(depth: 1, noTags: false, reference: '', shallow: true), 
               sparseCheckout([[path: 'helm']])], 
-            userRemoteConfigs: [[url: 'https://github.com/careroms-personal/stupid-cpp-terminal-clock.git']]))
+            userRemoteConfigs: [[url: "https://github.com/${gitRepo}"]]))
       }
 
       stage("Check file") {
