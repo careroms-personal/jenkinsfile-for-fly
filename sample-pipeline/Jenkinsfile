@@ -15,7 +15,7 @@ node("general-pipeline") {
       gitRepo = selected.gitRepo
       dockerRegistry = selected.dockerRegistry
       helmName = selected.helmName
-
+ 
       echo "Configure completed."
     }
   }
