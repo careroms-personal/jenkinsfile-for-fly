@@ -1,0 +1,17 @@
+node("image-builder") {
+  container("kaniko"){
+    stage("Build image") {
+      withCredentials([file(credentialsId: 'dockerhub-config-json', variable: 'DOCKER_CONFIG_JSON')]) {
+        sh '''
+          mkdir -p /kaniko/.docker
+          cp "$DOCKER_CONFIG_JSON" /kaniko/.docker/config.json
+
+          /kaniko/executor \
+            --context=git://github.com/careroms-personal/stupid-cpp-hello-world.git#refs/heads/main \
+            --dockerfile=Dockerfile \
+            --destination=careromspersonal/hell-world-cpp:latest
+        '''
+      }
+    }
+  }
+}
