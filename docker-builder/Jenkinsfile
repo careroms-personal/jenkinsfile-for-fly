@@ -15,7 +15,7 @@ node("image-builder") {
       if(buildStepSelected.contains("builddocker")) {
         sh """
           mkdir -p /kaniko/.docker
-          echo "$PODMAN_AUTH" > /kaniko/.docker/config.json
+          echo "\$PODMAN_AUTH" > /kaniko/.docker/config.json
 
           /kaniko/executor \
             --context=git://github.com/${gitRepo}#refs/heads/main \
