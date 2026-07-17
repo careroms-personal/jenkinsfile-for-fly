@@ -1,37 +1,47 @@
+def buildStepSelected = BUILD_STEP_SELECT.toLowerCase().replace(" ", "")
+
 node("image-builder") {
   container("kaniko"){
     stage("Build image") {
-      sh '''
-        mkdir -p /kaniko/.docker
-        echo "$PODMAN_AUTH" > /kaniko/.docker/config.json
+      if(buildStepSelected.contains("builddocker")) {
+        sh '''
+          mkdir -p /kaniko/.docker
+          echo "$PODMAN_AUTH" > /kaniko/.docker/config.json
 
-        /kaniko/executor \
-          --context=git://github.com/careroms-personal/stupid-cpp-terminal-clock.git#refs/heads/main \
-          --dockerfile=Dockerfile \
-          --destination=careromspersonal/stupid-cpp-terminal-clock:latest
-      '''
+          /kaniko/executor \
+            --context=git://github.com/careroms-personal/stupid-cpp-terminal-clock.git#refs/heads/main \
+            --dockerfile=Dockerfile \
+            --destination=careromspersonal/stupid-cpp-terminal-clock:latest
+        '''
+      } else {
+        echo "Skip docker build step."
+      }
     }
   }
 }
 
 node("helm-deploy") {
   container("helm") {
-    stage("Checkout Project helm file") {
-      checkout(
-        scmGit(
-          branches: [[name: '*/main']], 
-          extensions: [
-            cloneOption(depth: 1, noTags: false, reference: '', shallow: true), 
-            sparseCheckout([[path: 'helm']])], 
-          userRemoteConfigs: [[url: 'https://github.com/careroms-personal/stupid-cpp-terminal-clock.git']]))
-    }
+    if(buildStepSelected.contains("helmdeploy")) {
+      stage("Checkout Project helm file") {
+        checkout(
+          scmGit(
+            branches: [[name: '*/main']], 
+            extensions: [
+              cloneOption(depth: 1, noTags: false, reference: '', shallow: true), 
+              sparseCheckout([[path: 'helm']])], 
+            userRemoteConfigs: [[url: 'https://github.com/careroms-personal/stupid-cpp-terminal-clock.git']]))
+      }
 
-    stage("Check file") {
-      sh "ls"
-    }
+      stage("Check file") {
+        sh "ls"
+      }
 
-    stage("Helm deploy") {
-      sh "helm upgrade sctc --install --namespace default ./helm --debug --dry-run"
+      stage("Helm deploy") {
+        sh "helm upgrade sctc --install --namespace default ./helm --debug --dry-run"
+      }
+    } else {
+      echo "Skip Helm deploy step."
     }
   }
 }
