@@ -1,10 +1,10 @@
 node("image-builder") {
   container("kaniko"){
     stage("Build image") {
-      withCredentials([file(credentialsId: 'dockerhub-config-json', variable: 'DOCKER_CONFIG_JSON')]) {
+      withCredentials([file(credentialsId: 'dockerhub-config-json', variable: 'PODMAN_AUTH')]) {
         sh '''
           mkdir -p /kaniko/.docker
-          cp "$DOCKER_CONFIG_JSON" /kaniko/.docker/config.json
+          cp "$PODMAN_AUTH" /kaniko/.docker/config.json
 
           /kaniko/executor \
             --context=git://github.com/careroms-personal/stupid-cpp-hello-world.git#refs/heads/main \
