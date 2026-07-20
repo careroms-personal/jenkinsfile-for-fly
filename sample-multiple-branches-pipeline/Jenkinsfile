@@ -1,9 +1,15 @@
+def job = currentBuild.rawBuild.getParent()
+def source = job.getParent().getSCMSources()[0]
+def pipelineConfig = readYaml file: "pipeline-config.yaml"
+def repoName = source.tokenize('/').last().replace('.git', '')
+def repoBranch = source.getBranches()[0].getName().replace('*/', '')
+
 node("general-pipeline") {
   container("ubuntu") {
-    stage("Check env") {
-      def job = currentBuild.rawBuild.getParent()
-      def source = job.getParent().getSCMSources()[0]
-      echo "Primary repo: ${source.getRemote()}"
+    stage("Check variable") {
+      echo "repoName: ${repoName}"
+      echo "repoBranch: ${repoBranch}"
+      echo "pipelineConfig: ${pipelineConfig}"
     }
   }
 }
