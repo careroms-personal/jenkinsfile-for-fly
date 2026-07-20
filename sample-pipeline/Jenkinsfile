@@ -27,7 +27,8 @@ node("general-pipeline") {
           /kaniko/executor \
             --context=git://github.com/${gitRepo}#refs/heads/main \
             --dockerfile=Dockerfile \
-            --destination=careromspersonal/${dockerRegistry}:latest
+            --destination=careromspersonal/${dockerRegistry}:latest \
+            --ignore-path=/product_uuid
         """
       } else {
         echo "Skip docker build step."
