@@ -2,7 +2,7 @@ def job = currentBuild.rawBuild.getParent()
 def source = job.getParent().getSCMSources()[0]
 def pipelineConfig = readYaml file: "pipeline-config.yaml"
 def repoName = source.tokenize('/').last().replace('.git', '')
-def repoBranch = source.getBranches()[0].getName().replace('*/', '')
+def repoBranch = BRANCH_NAME
 
 node("general-pipeline") {
   container("ubuntu") {
