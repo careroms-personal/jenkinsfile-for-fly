@@ -1,0 +1,34 @@
+nameOverride: "get-time"
+
+replicaCount: 1
+
+image:
+  repository: careromspersonal/cpp-api-query-multiple-timezone
+  pullPolicy: Always
+  tag: "latest"
+
+imagePullSecrets: []
+
+service:
+  enabled: true
+  port: 80
+  targetPort: 3333
+
+ingress:
+  enabled: true
+  className: "nginx"
+  annotations: {}
+  hosts:
+    - host: get-time.my-ubuntu.hello
+      paths:
+        - path: /api
+          pathType: Prefix
+  tls: []
+
+resources: {}
+
+nodeSelector: {}
+
+tolerations: []
+
+affinity: {}

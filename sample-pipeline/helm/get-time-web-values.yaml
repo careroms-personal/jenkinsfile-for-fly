@@ -12,7 +12,7 @@ imagePullSecrets: []
 service:
   enabled: true
   port: 80
-  targetPort: 3333
+  targetPort: 3000
 
 ingress:
   enabled: true
