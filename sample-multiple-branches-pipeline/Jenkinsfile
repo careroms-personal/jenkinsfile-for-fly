@@ -61,20 +61,28 @@ node("general-pipeline") {
     }
   }
 
-  container("kaniko") {
-    stage("Build docker image") {
-      dir(repoName) {
-        if(pipelineConfig.projectConfigs[repoName].dockerRegistry) {
-          sh """
-            /kaniko/executor \
-              --dockerfile=Dockerfile \
-              --destination=careromspersonal/${pipelineConfig.projectConfigs[repoName].dockerRegistry}:latest \
-              --ignore-path=/product_uuid
-          """
-        } else {
-          echo "Error: No docker registry configured for ${repoName}. Skipping docker build step."
+  def branchConfig = pipelineConfig.branchConfigs[repoBranch]
+
+  if (branchConfig) {
+    def projectConfig = pipelineConfig.projectConfigs[repoName]
+
+    container("kaniko") {
+      stage("Build docker image") {
+        dir(repoName) {
+          if (projectConfig?.dockerRegistry) {
+            sh """
+              /kaniko/executor \
+                --dockerfile=Dockerfile \
+                --destination=careromspersonal/${projectConfig.dockerRegistry}:${branchConfig.dockerTag} \
+                --ignore-path=/product_uuid
+            """
+          } else {
+            echo "Error: No docker registry configured for ${repoName}. Skipping docker build step."
+          }
         }
       }
     }
+  } else {
+    echo "Skipping build: branch '${repoBranch}' not in branchConfigs"
   }
 }
