@@ -72,6 +72,7 @@ node("general-pipeline") {
           if (projectConfig?.dockerRegistry) {
             sh """
               /kaniko/executor \
+                --context=dir://\$(pwd) \
                 --dockerfile=Dockerfile \
                 --destination=careromspersonal/${projectConfig.dockerRegistry}:${branchConfig.dockerTag} \
                 --ignore-path=/product_uuid
@@ -80,6 +81,12 @@ node("general-pipeline") {
             echo "Error: No docker registry configured for ${repoName}. Skipping docker build step."
           }
         }
+      }
+    }
+
+    container("helm") {
+      stage("Deploy to Kubernetes") {
+        
       }
     }
   } else {
