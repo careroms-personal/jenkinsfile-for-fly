@@ -1,0 +1,7 @@
+node("general-pipeline") {
+  container("ubuntu") {
+    stage("Say Hello") {
+      echo "Hello, World!"
+    }
+  }
+}
