@@ -93,7 +93,7 @@ node("general-pipeline") {
               --create-namespace \
               --values helm/get-time-api-values.yaml \
               --set image.tag=${branchConfig.dockerTag} \
-              --set ingress.host=${branchConfig.ingressHost} \
+              --set 'ingress.hosts[0].host=${branchConfig.ingressHost}' \
               --debug
           """
         }
