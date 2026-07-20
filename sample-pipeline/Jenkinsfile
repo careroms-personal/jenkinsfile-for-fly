@@ -5,49 +5,47 @@ def helmName = ""
 def projectConfig
 def pipelinePath = "sample-pipeline"
 
-podTemplate(cloud: 'k8s-2', label: 'general-pipeline') {
-  node("general-pipeline") {
-    container("ubuntu") {
-      stage("Select config") {
-        checkout scm
-        projectConfig = readYaml(file: "${pipelinePath}/pipeline-config.yaml")
-        def selected = projectConfig.projectConfigs[SELECT_STUPID_PROJECT]
+node("general-pipeline") {
+  container("ubuntu") {
+    stage("Select config") {
+      checkout scm
+      projectConfig = readYaml(file: "${pipelinePath}/pipeline-config.yaml")
+      def selected = projectConfig.projectConfigs[SELECT_STUPID_PROJECT]
 
-        gitRepo = selected.gitRepo
-        dockerRegistry = selected.dockerRegistry
-        helmName = selected.helmName
-  
-        echo "Configure completed."
-      }
+      gitRepo = selected.gitRepo
+      dockerRegistry = selected.dockerRegistry
+      helmName = selected.helmName
+
+      echo "Configure completed."
     }
+  }
 
-    container("kaniko"){
-      stage("Build image") {
-        if(buildStepSelected.contains("builddocker")) {
-          sh """
-            /kaniko/executor \
-              --context=git://github.com/${gitRepo}#refs/heads/main \
-              --dockerfile=Dockerfile \
-              --destination=careromspersonal/${dockerRegistry}:latest
-          """
-        } else {
-          echo "Skip docker build step."
-        }
-      }
-    }
-
-    container("helm") {
-      if(buildStepSelected.contains("helmdeploy")) {
-        stage("Check file") {
-          sh "ls"
-        }
-
-        stage("Helm deploy") {
-          sh "helm upgrade ${helmName} --install --namespace default ./${pipelinePath}/helm -f ./${pipelinePath}/helm/${helmName}-values.yaml --debug"
-        }
+  container("kaniko"){
+    stage("Build image") {
+      if(buildStepSelected.contains("builddocker")) {
+        sh """
+          /kaniko/executor \
+            --context=git://github.com/${gitRepo}#refs/heads/main \
+            --dockerfile=Dockerfile \
+            --destination=careromspersonal/${dockerRegistry}:latest
+        """
       } else {
-        echo "Skip Helm deploy step."
+        echo "Skip docker build step."
       }
+    }
+  }
+
+  container("helm") {
+    if(buildStepSelected.contains("helmdeploy")) {
+      stage("Check file") {
+        sh "ls"
+      }
+
+      stage("Helm deploy") {
+        sh "helm upgrade ${helmName} --install --namespace default ./${pipelinePath}/helm -f ./${pipelinePath}/helm/${helmName}-values.yaml --debug"
+      }
+    } else {
+      echo "Skip Helm deploy step."
     }
   }
 }
