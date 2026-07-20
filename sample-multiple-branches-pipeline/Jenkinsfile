@@ -86,7 +86,12 @@ node("general-pipeline") {
 
     container("helm") {
       stage("Deploy to Kubernetes") {
-        
+        sh """
+          helm upgrade ${projectConfig.helmName} --install helm/ \
+            --namespace ${branchConfig.namespace} --create-namespace \
+            --values helm/${projectConfig.helmName}-values.yaml \
+            --set image.tag=${branchConfig.dockerTag} --debug
+        """
       }
     }
   } else {
