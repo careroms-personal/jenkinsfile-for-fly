@@ -1,0 +1,24 @@
+nameOverride: "sheep-counting"
+
+replicaCount: 1
+
+image:
+  repository: careromspersonal/stupid-cpp-sheep-counting
+  pullPolicy: Always
+  tag: "latest"
+
+imagePullSecrets: []
+
+service:
+  enabled: false
+
+ingress:
+  enabled: false
+
+resources: {}
+
+nodeSelector: {}
+
+tolerations: []
+
+affinity: {}

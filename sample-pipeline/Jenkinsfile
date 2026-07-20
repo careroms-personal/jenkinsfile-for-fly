@@ -3,28 +3,23 @@ def gitRepo = ""
 def dockerRegistry = ""
 def helmName = ""
 def projectConfig
+def pipelinePath = "sample-pipeline"
 
-node("general-job") {
+node("general-pipeline") {
   container("ubuntu") {
-    stage("Checkout pipeline project") {
-      checkout scm
-    }
-
-    stage("Read yaml config") {
-      projectConfig = readYaml(file: "docker-builder/pipeline-config.yaml")
-    }
-
     stage("Select config") {
+      checkout scm
+      projectConfig = readYaml(file: "${pipelinePath}/pipeline-config.yaml")
       def selected = projectConfig.projectConfigs[SELECT_STUPID_PROJECT]
 
       gitRepo = selected.gitRepo
       dockerRegistry = selected.dockerRegistry
       helmName = selected.helmName
+
+      echo "Configure completed."
     }
   }
-}
 
-node("image-builder") {
   container("kaniko"){
     stage("Build image") {
       if(buildStepSelected.contains("builddocker")) {
@@ -32,34 +27,23 @@ node("image-builder") {
           /kaniko/executor \
             --context=git://github.com/${gitRepo}#refs/heads/main \
             --dockerfile=Dockerfile \
-            --destination=careromspersonal/${dockerRegistry}:latest
+            --destination=careromspersonal/${dockerRegistry}:latest \
+            --ignore-path=/product_uuid
         """
       } else {
         echo "Skip docker build step."
       }
     }
   }
-}
 
-node("helm-deploy") {
   container("helm") {
     if(buildStepSelected.contains("helmdeploy")) {
-      stage("Checkout Project helm file") {
-        checkout(
-          scmGit(
-            branches: [[name: '*/main']], 
-            extensions: [
-              cloneOption(depth: 1, noTags: false, reference: '', shallow: true), 
-              sparseCheckout([[path: 'helm']])], 
-            userRemoteConfigs: [[url: "https://github.com/${gitRepo}"]]))
-      }
-
       stage("Check file") {
         sh "ls"
       }
 
       stage("Helm deploy") {
-        sh "helm upgrade ${helmName} --install --namespace default ./helm --debug"
+        sh "helm upgrade ${helmName} --install --namespace default ./${pipelinePath}/helm -f ./${pipelinePath}/helm/${helmName}-values.yaml --debug"
       }
     } else {
       echo "Skip Helm deploy step."

@@ -1,0 +1,24 @@
+nameOverride: "terminal-clock"
+
+replicaCount: 1
+
+image:
+  repository: careromspersonal/stupid-cpp-terminal-clock
+  pullPolicy: Always
+  tag: "latest"
+
+imagePullSecrets: []
+
+service:
+  enabled: false
+
+ingress:
+  enabled: false
+
+resources: {}
+
+nodeSelector: {}
+
+tolerations: []
+
+affinity: {}
