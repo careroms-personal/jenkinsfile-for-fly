@@ -8,7 +8,9 @@ image:
 imagePullSecrets: []
 
 service:
-  enabled: false
+  enabled: true
+  port: 80
+  targetPort: 3333
 
 resources: {}
 

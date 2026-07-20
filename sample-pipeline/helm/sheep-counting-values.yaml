@@ -7,6 +7,9 @@ image:
 
 imagePullSecrets: []
 
+service:
+  enabled: false
+
 resources: {}
 
 nodeSelector: {}

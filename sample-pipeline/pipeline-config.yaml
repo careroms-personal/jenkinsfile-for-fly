@@ -8,3 +8,8 @@ projectConfigs:
     gitRepo: "careroms-personal/stupid-cpp-sheep-couting.git"
     dockerRegistry: "stupid-cpp-sheep-counting"
     helmName: "sheep-counting"
+
+  get-time:
+    gitRepo: "careroms-personal/cpp-api-query-multiple-timezone.git"
+    dockerRegistry: "cpp-api-query-multiple-timezone"
+    helmName: "get-time"
