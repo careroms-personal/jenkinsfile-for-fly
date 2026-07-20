@@ -12,6 +12,9 @@ imagePullSecrets: []
 service:
   enabled: false
 
+ingress:
+  enabled: false
+
 resources: {}
 
 nodeSelector: {}

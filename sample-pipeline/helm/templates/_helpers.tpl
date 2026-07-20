@@ -1,8 +1,8 @@
-{{- define "sheep-counting.name" -}}
+{{- define "helm-template.name" -}}
 {{- default .Chart.Name .Values.nameOverride | trunc 63 | trimSuffix "-" -}}
 {{- end -}}
 
-{{- define "sheep-counting.fullname" -}}
+{{- define "helm-template.fullname" -}}
 {{- if .Values.fullnameOverride -}}
 {{- .Values.fullnameOverride | trunc 63 | trimSuffix "-" -}}
 {{- else -}}
@@ -15,14 +15,14 @@
 {{- end -}}
 {{- end -}}
 
-{{- define "sheep-counting.labels" -}}
-app.kubernetes.io/name: {{ include "sheep-counting.name" . }}
+{{- define "helm-template.labels" -}}
+app.kubernetes.io/name: {{ include "helm-template.name" . }}
 app.kubernetes.io/instance: {{ .Release.Name }}
 app.kubernetes.io/managed-by: {{ .Release.Service }}
 helm.sh/chart: {{ .Chart.Name }}-{{ .Chart.Version }}
 {{- end -}}
 
-{{- define "sheep-counting.selectorLabels" -}}
-app.kubernetes.io/name: {{ include "sheep-counting.name" . }}
+{{- define "helm-template.selectorLabels" -}}
+app.kubernetes.io/name: {{ include "helm-template.name" . }}
 app.kubernetes.io/instance: {{ .Release.Name }}
 {{- end -}}

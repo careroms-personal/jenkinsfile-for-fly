@@ -1,18 +1,18 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: {{ include "sheep-counting.fullname" . }}
+  name: {{ include "helm-template.fullname" . }}
   labels:
-    {{- include "sheep-counting.labels" . | nindent 4 }}
+    {{- include "helm-template.labels" . | nindent 4 }}
 spec:
   replicas: {{ .Values.replicaCount }}
   selector:
     matchLabels:
-      {{- include "sheep-counting.selectorLabels" . | nindent 6 }}
+      {{- include "helm-template.selectorLabels" . | nindent 6 }}
   template:
     metadata:
       labels:
-        {{- include "sheep-counting.selectorLabels" . | nindent 8 }}
+        {{- include "helm-template.selectorLabels" . | nindent 8 }}
     spec:
       {{- with .Values.imagePullSecrets }}
       imagePullSecrets:

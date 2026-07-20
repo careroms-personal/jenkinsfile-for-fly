@@ -2,9 +2,9 @@
 apiVersion: v1
 kind: Service
 metadata:
-  name: {{ include "sheep-counting.fullname" . }}
+  name: {{ include "helm-template.fullname" . }}
   labels:
-    {{- include "sheep-counting.labels" . | nindent 4 }}
+    {{- include "helm-template.labels" . | nindent 4 }}
 spec:
   type: {{ .Values.service.type | default "ClusterIP" }}
   ports:
@@ -13,5 +13,5 @@ spec:
       targetPort: {{ .Values.service.targetPort | default .Values.service.port }}
       protocol: TCP
   selector:
-    {{- include "sheep-counting.selectorLabels" . | nindent 4 }}
+    {{- include "helm-template.selectorLabels" . | nindent 4 }}
 {{- end }}
