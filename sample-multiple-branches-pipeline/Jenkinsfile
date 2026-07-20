@@ -2,8 +2,8 @@ node("general-pipeline") {
   container("ubuntu") {
     stage("Check env") {
       def job = currentBuild.rawBuild.getParent()
-      def source = job.getParent().getSCMSources()[0].getSource()
-      echo "Primary repo: ${source.remote}"
+      def source = job.getParent().getSCMSources()[0]
+      echo "Primary repo: ${source.getRemote()}"
     }
   }
 }
