@@ -17,12 +17,13 @@ service:
 ingress:
   enabled: true
   className: "nginx"
-  annotations: {}
+  annotations:
+    nginx.ingress.kubernetes.io/rewrite-target: /$2
   hosts:
     - host: get-time.my-ubuntu.hello
       paths:
-        - path: /api
-          pathType: Prefix
+        - path: /api(/|$)(.*)
+          pathType: ImplementationSpecific
   tls: []
 
 resources: {}
