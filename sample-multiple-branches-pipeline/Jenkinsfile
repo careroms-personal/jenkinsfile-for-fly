@@ -1,11 +1,13 @@
 node("general-pipeline") {
-  def job = currentBuild.rawBuild.getParent()
-  def source = job.getParent().getSCMSources()[0]
-  def repoName = source.tokenize('/').last().replace('.git', '')
-  def repoBranch = BRANCH_NAME
+  
 
   container("ubuntu") {
     stage("Check project config") {
+      def job = currentBuild.rawBuild.getParent()
+      def source = job.getParent().getSCMSources()[0]
+      def repoName = source.tokenize('/').last().replace('.git', '')
+      def repoBranch = BRANCH_NAME
+      
       echo "Source repo: ${repoName}"
       echo "Source branch: ${repoBranch}"
     }
