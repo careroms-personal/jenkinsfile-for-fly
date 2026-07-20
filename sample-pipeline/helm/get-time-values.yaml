@@ -1,7 +1,9 @@
+nameOverride: "get-time"
+
 replicaCount: 1
 
 image:
-  repository: careromspersonal/stupid-cpp-terminal-clock
+  repository: careromspersonal/cpp-api-query-multiple-timezone
   pullPolicy: Always
   tag: "latest"
 
