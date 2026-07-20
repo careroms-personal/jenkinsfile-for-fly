@@ -11,9 +11,12 @@ branchConfigs:
   main:
     dockerTag: "latest"
     namespace: "default"
+    ingressHost: "get-time.my-ubuntu.hello"
   uat:
     dockerTag: "uat"
     namespace: "uat"
+    ingressHost: "uat-get-time.my-ubuntu.hello"
   dev:
     dockerTag: "dev"
     namespace: "dev"
+    ingressHost: "dev-get-time.my-ubuntu.hello"

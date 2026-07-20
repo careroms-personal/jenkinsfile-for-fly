@@ -89,9 +89,12 @@ node("general-pipeline") {
         dir("pipeline/sample-multiple-branches-pipeline") {
           sh """
             helm upgrade ${projectConfig.helmName} --install helm/ \
-              --namespace ${branchConfig.namespace} --create-namespace \
-              --values helm/${projectConfig.helmName}-values.yaml \
-              --set image.tag=${branchConfig.dockerTag} --debug
+              --namespace ${branchConfig.namespace} \
+              --create-namespace \
+              --values helm/get-time-api-values.yaml \
+              --set image.tag=${branchConfig.dockerTag} \
+              --set ingress.host=${branchConfig.ingressHost} \
+              --debug
           """
         }
       }
