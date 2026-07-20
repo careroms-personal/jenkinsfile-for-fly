@@ -1,4 +1,4 @@
-nameOverride: "get-time"
+nameOverride: "get-time-api"
 
 replicaCount: 1
 
