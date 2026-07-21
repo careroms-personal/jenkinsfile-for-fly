@@ -18,3 +18,8 @@ projectConfigs:
     gitRepo: "careroms-personal/nodejs-query-multiple-timezone-gui.git"
     dockerRegistry: "nodejs-query-multiple-timezone-gui"
     helmName: "get-time-web"
+
+  robot-query:
+    gitRepo: "careroms-personal/cpp-robot-information-api.git"
+    dockerRegistry: "cpp-robot-information-api"
+    helmName: "robot-query"

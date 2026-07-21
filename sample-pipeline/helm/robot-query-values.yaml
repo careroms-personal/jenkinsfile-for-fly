@@ -1,0 +1,51 @@
+nameOverride: "robot-query"
+
+replicaCount: 1
+
+image:
+  repository: careromspersonal/cpp-robot-information-api
+  pullPolicy: Always
+  tag: "latest"
+
+imagePullSecrets: []
+
+service:
+  enabled: true
+  port: 80
+  targetPort: 3333
+
+ingress:
+  enabled: true
+  className: "nginx"
+  annotations: {}
+  hosts:
+    - host: robot-query.my-ubuntu.hello
+      paths:
+        - path: /
+          pathType: Prefix
+  tls: []
+
+env:
+  - name: DB_USER
+    valueFrom:
+      secretKeyRef:
+        name: mysql-test-node-secret
+        key: DB_USER
+  - name: DB_PASSWORD
+    valueFrom:
+      secretKeyRef:
+        name: mysql-test-node-secret
+        key: DB_PASSWORD
+  - name: DB_NAME
+    valueFrom:
+      secretKeyRef:
+        name: mysql-test-node-secret
+        key: ROBOT_QUERY_API_DB_NAME
+
+resources: {}
+
+nodeSelector: {}
+
+tolerations: []
+
+affinity: {}
