@@ -1,0 +1,38 @@
+nameOverride: "get-time-web"
+
+replicaCount: 1
+
+image:
+  repository: careromspersonal/nodejs-query-multiple-timezone-gui
+  pullPolicy: Always
+  tag: "latest"
+
+imagePullSecrets: []
+
+env:
+  - name: TIMEZONE_API_URL
+    value: "http://get-time-api/current_time"
+
+service:
+  enabled: true
+  port: 80
+  targetPort: 3000
+
+ingress:
+  enabled: true
+  className: "nginx"
+  annotations: {}
+  hosts:
+    - host: get-time.my-ubuntu.hello
+      paths:
+        - path: /
+          pathType: Prefix
+  tls: []
+
+resources: {}
+
+nodeSelector: {}
+
+tolerations: []
+
+affinity: {}

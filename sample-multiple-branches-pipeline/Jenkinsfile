@@ -1,0 +1,105 @@
+@NonCPS
+def getRepoUrl() {
+  def job = currentBuild.rawBuild.getParent()
+  def source = job.getParent().getSCMSources()[0]
+  def repoUrl = source.getRemote()
+  return repoUrl
+}
+
+def repoUrl = getRepoUrl()
+def repoName = repoUrl.tokenize('/').last().replace('.git', '')
+def repoBranch = env.BRANCH_NAME
+
+node("cpp-run-test") {
+  container("gcc-13") {
+    stage("Checkout source code"){
+      checkout scm
+    }
+    
+    stage("Run tests") {
+      sh "./test.sh"
+    }
+
+    stage("Stash artifacts") {
+      stash(name: "source-code", includes: "**")
+    }
+  }
+}
+
+node("general-pipeline") {
+  def pipelineConfig 
+
+  container("ubuntu") {
+    stage("Unstash artifacts") {
+      dir(repoName) {
+        unstash "source-code"
+        sh "ls"
+        sh "pwd"
+      }
+    }
+
+    stage("Checkout scm build config") {
+      checkout scmGit(
+        branches: [[name: '*/multiple-branches-pipeline']],
+        extensions: [
+          cloneOption(depth: 1, noTags: false, shallow: true),
+          [$class: 'RelativeTargetDirectory', relativeTargetDir: 'pipeline'],
+          [$class: 'SparseCheckoutPaths',
+          sparseCheckoutPaths: [[path: 'sample-multiple-branches-pipeline']]]
+        ],
+        userRemoteConfigs: [[url: 'https://github.com/careroms-personal/jenkinsfile-for-fly.git']]
+      ) 
+    }
+
+    stage("Prepare config") {
+      stage("Prepare config") {
+        dir("pipeline/sample-multiple-branches-pipeline") {
+          sh "pwd && ls -la"   // debug: confirm file is actually here
+          pipelineConfig = readYaml(file: "pipeline-config.yaml")
+        }
+      }
+    }
+  }
+
+  def branchConfig = pipelineConfig.branchConfigs[repoBranch]
+
+  if (branchConfig) {
+    def projectConfig = pipelineConfig.projectConfigs[repoName]
+
+    container("kaniko") {
+      stage("Build docker image") {
+        dir(repoName) {
+          if (projectConfig?.dockerRegistry) {
+            sh """
+              /kaniko/executor \
+                --context=dir://\$(pwd) \
+                --dockerfile=Dockerfile \
+                --destination=careromspersonal/${projectConfig.dockerRegistry}:${branchConfig.dockerTag} \
+                --ignore-path=/product_uuid
+            """
+          } else {
+            echo "Error: No docker registry configured for ${repoName}. Skipping docker build step."
+          }
+        }
+      }
+    }
+
+    container("helm") {
+      stage("Deploy to Kubernetes") {
+        dir("pipeline/sample-multiple-branches-pipeline") {
+          sh """
+            helm upgrade ${projectConfig.helmName} --install helm/ \
+              --namespace ${branchConfig.namespace} \
+              --create-namespace \
+              --values helm/get-time-api-values.yaml \
+              --set image.tag=${branchConfig.dockerTag} \
+              --set 'ingress.hosts[0].host=${branchConfig.ingressHost}' \
+              --debug
+          """
+        }
+      }
+    }
+  } else {
+    echo "Skipping build: branch '${repoBranch}' not in branchConfigs"
+  }
+}
