@@ -12,7 +12,7 @@ node("ec2-provisioner") {
           error("CUSTOMER_NAME must match ^[a-z0-9-]+\$, got: ${params.CUSTOMER_NAME}")
         }
         env.CUSTOMER_NAME = params.CUSTOMER_NAME
-        env.VAR_FILE = "${pipelineDir}/customer-configs/${params.CUSTOMER_NAME}.tfvars"
+        env.VAR_FILE = "${pipelineDir}/customer-configs/${params.CUSTOMER_NAME}.yaml"
 
         if (!fileExists(env.VAR_FILE)) {
           error("No customer config found at ${env.VAR_FILE}")
