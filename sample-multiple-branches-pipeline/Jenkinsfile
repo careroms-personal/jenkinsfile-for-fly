@@ -40,7 +40,7 @@ node("general-pipeline") {
 
     stage("Checkout scm build config") {
       checkout scmGit(
-        branches: [[name: '*/multiple-branches-pipeline']],
+        branches: [[name: '*/main']],
         extensions: [
           cloneOption(depth: 1, noTags: false, shallow: true),
           [$class: 'RelativeTargetDirectory', relativeTargetDir: 'pipeline'],
