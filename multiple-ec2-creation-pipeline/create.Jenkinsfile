@@ -4,36 +4,30 @@ node("ec2-provisioner") {
       checkout scm
     }
 
-    dir("multiple-ec2-creation-pipeline/") {
-      def pipelineDir = pwd()
-
+    dir("multiple-ec2-creation-pipeline/sample-ec2-modules/environments/uat/") {
       stage("Resolve customer config") {
         if (!(params.CUSTOMER_NAME ==~ /[a-z0-9-]+/)) {
           error("CUSTOMER_NAME must match ^[a-z0-9-]+\$, got: ${params.CUSTOMER_NAME}")
         }
         env.CUSTOMER_NAME = params.CUSTOMER_NAME
-        env.VAR_FILE = "${pipelineDir}/customer-configs/${params.CUSTOMER_NAME}.yaml"
 
-        if (!fileExists(env.VAR_FILE)) {
-          error("No customer config found at ${env.VAR_FILE}")
+        if (!fileExists("customers/${params.CUSTOMER_NAME}.yaml")) {
+          error("No customer config found at customers/${params.CUSTOMER_NAME}.yaml")
         }
       }
 
-      dir("sample-ec2-modules/environments/uat/") {
-        withCredentials([usernamePassword(
-          credentialsId: 'jenkins-aws-access-key',
-          usernameVariable: 'AWS_ACCESS_KEY_ID',
-          passwordVariable: 'AWS_SECRET_ACCESS_KEY'
-        )]) {
-          stage("Init opentofu") {
-            sh '''opentofu init -reconfigure \
-                  -backend-config="key=uat/$CUSTOMER_NAME/terraform.tfstate" \
-                  -backend-config="encrypt=true"'''
-          }
+      withCredentials([usernamePassword(
+        credentialsId: 'jenkins-aws-access-key',
+        usernameVariable: 'AWS_ACCESS_KEY_ID',
+        passwordVariable: 'AWS_SECRET_ACCESS_KEY'
+      )]) {
+        stage("Init opentofu") {
+          sh '''tofu init -input=false \
+                -backend-config="key=uat/$CUSTOMER_NAME/terraform.tfstate"'''
+        }
 
-          stage("Plan opentofu") {
-            sh 'opentofu plan -var-file="$VAR_FILE"'
-          }
+        stage("Plan opentofu") {
+          sh 'tofu plan -var="customer_name=$CUSTOMER_NAME"'
         }
       }
     }

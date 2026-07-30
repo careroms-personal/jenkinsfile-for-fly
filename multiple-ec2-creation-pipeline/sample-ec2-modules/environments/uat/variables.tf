@@ -1,15 +1,9 @@
 variable "customer_name" {
   type        = string
-  description = "Customer identifier, passed straight through to the uat-ec2 module."
-}
+  description = "Customer identifier. The only value Jenkins passes in via -var; used to look up customers/<name>.yaml for the rest of this customer's config."
 
-variable "instance_type" {
-  type        = string
-  description = "EC2 instance type, passed straight through to the uat-ec2 module."
-}
-
-variable "ami_id" {
-  type        = string
-  default     = null
-  description = "AMI ID, passed straight through to the uat-ec2 module. If null, the module falls back to the latest Ubuntu LTS AMI."
+  validation {
+    condition     = can(regex("^[a-z0-9-]+$", var.customer_name))
+    error_message = "customer_name must contain only lowercase letters, numbers, and hyphens."
+  }
 }
