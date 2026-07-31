@@ -36,5 +36,6 @@ resource "aws_instance" "uat" {
     ManagedBy   = "jenkins-ec2-portal"
     Customer    = var.customer_name
     Environment = "UAT"
+    ManagedBy  = "jenkins-ec2-portal"
   }
 }
