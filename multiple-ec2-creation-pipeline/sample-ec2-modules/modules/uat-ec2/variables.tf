@@ -24,3 +24,9 @@ variable "vpc_security_group_ids" {
   default     = ["sg-02b05989e0e617e14"]
   description = "Existing security group(s) attached to the instance. Hardcoded PoC default, reused across all customers for now."
 }
+
+variable "ami_id" {
+  type        = string
+  default     = null
+  description = "Optional explicit AMI ID override for customers with their own setup process. When unset, falls back to the latest Ubuntu AMI via the aws_ami data source."
+}

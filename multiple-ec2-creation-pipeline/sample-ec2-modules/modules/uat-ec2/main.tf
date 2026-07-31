@@ -4,6 +4,8 @@ locals {
 }
 
 data "aws_ami" "ubuntu" {
+  count = var.ami_id == null ? 1 : 0
+
   most_recent = true
   owners      = ["099720109477"] # Canonical
 
@@ -24,7 +26,7 @@ data "aws_ami" "ubuntu" {
 }
 
 resource "aws_instance" "uat" {
-  ami                    = data.aws_ami.ubuntu.id
+  ami                    = coalesce(var.ami_id, try(data.aws_ami.ubuntu[0].id, null))
   instance_type          = var.instance_type
   subnet_id              = var.subnet_id
   vpc_security_group_ids = var.vpc_security_group_ids

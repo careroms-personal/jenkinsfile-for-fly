@@ -7,6 +7,7 @@ module "this" {
 
   customer_name = local.customer_config.customer_name
   instance_type = local.customer_config.instance_type
+  ami_id        = try(local.customer_config.ami_id, null)
 }
 
 output "instance_id" {
