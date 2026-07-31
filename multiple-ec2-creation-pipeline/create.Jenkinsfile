@@ -29,6 +29,10 @@ node("ec2-provisioner") {
         stage("Plan opentofu") {
           sh 'tofu plan -var="customer_name=$CUSTOMER_NAME"'
         }
+
+        stage("Apply opentofu") {
+          sh 'tofu apply -auto-approve -var="customer_name=$CUSTOMER_NAME"'
+        }
       }
     }
   }
