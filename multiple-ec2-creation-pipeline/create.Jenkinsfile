@@ -30,7 +30,7 @@ node("ec2-provisioner") {
           sh 'tofu plan -var="customer_name=$CUSTOMER_NAME"'
         }
 
-        stage("Apply opentofu") {
+        stage("Apply Resources $CUSTOMER_NAME") {
           sh 'tofu apply -auto-approve -var="customer_name=$CUSTOMER_NAME"'
         }
       }
